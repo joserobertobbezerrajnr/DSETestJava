@@ -116,7 +116,28 @@ class AnagramGeneratorTest {
 
 ---
 
-## 2. Sobrescrevendo equals() e hashCode()
+## 1. Sobrescrevendo equals() e hashCode()
+
+É necessário sobrescrever o método equals() quando a definição padrão de igualdade (comparação de referências de objetos) não é suficiente. Um cenário comum é em classes de modelo (entidades), onde dois objetos diferentes na memória podem representar a mesma entidade do mundo real.
+
+Cenário de Exemplo:
+
+Considere uma classe Pessoa que possui um id único. Duas instâncias diferentes do objeto Pessoa devem ser consideradas "iguais" se possuírem o mesmo id.
+
+Considerações Chave:
+
+Contrato equals() e hashCode(): A regra fundamental é: se a.equals(b) for true, então a.hashCode() deve ser igual a b.hashCode().
+
+Reflexividade: x.equals(x) deve retornar true.
+
+Simetria: Se x.equals(y) retorna true, então y.equals(x) deve retornar true.
+
+Transitividade: Se x.equals(y) e y.equals(z) são true, então x.equals(z) deve ser true.
+
+Consistência: x.equals(y) deve retornar consistentemente true ou false se as propriedades comparadas não forem modificadas.
+
+Comparação com null: x.equals(null) deve retornar false.
+
 
 **Exemplo de implementação:**
 
@@ -149,7 +170,22 @@ public class Pessoa {
 
 ---
 
-## 3. Padrão de Projeto para Desacoplamento
+## 2. Padrão de Projeto para Desacoplamento
+Para desacoplar o código de uma biblioteca de terceiros, o padrão de projeto 
+
+Adapter (Adaptador) é uma excelente escolha.  Ele atua como um invólucro (wrapper) em torno da biblioteca, expondo uma interface estável e controlada para o restante da aplicação.
+
+Vantagens:
+
+Isolamento: A aplicação depende da interface do adaptador, não da biblioteca. Se a biblioteca for trocada, apenas a implementação do adaptador precisa ser modificada.
+
+Flexibilidade: Permite integrar bibliotecas com interfaces incompatíveis sem alterar o código existente da aplicação.
+
+Código Limpo: Mantém o código da aplicação focado na lógica de negócio, sem detalhes de implementação de bibliotecas de terceiros.
+
+Limitações:
+
+Complexidade Adicional: Introduz uma camada extra de abstração, o que pode aumentar ligeiramente a complexidade do projeto.
 
 **Exemplo: Adapter Pattern**
 
@@ -176,7 +212,19 @@ public class S3UploaderAdapter implements UploaderDeArquivos {
 
 ---
 
-## 4. Experiência com Angular
+## 3. Experiência com Angular
+Possuo experiência prática no desenvolvimento de Single-Page Applications (SPAs) com Angular, principalmente em painéis de administração e sistemas de gestão. Os recursos que mais utilizo e valorizo no framework são:
+
+Arquitetura Baseada em Componentes: Para criar UIs modulares e reutilizáveis.
+
+Injeção de Dependência: Essencial para escrever um código limpo, desacoplado e altamente testável.
+
+Two-way Data Binding: Para agilizar o desenvolvimento de formulários complexos.
+
+TypeScript: Pela segurança e manutenibilidade que a tipagem estática traz a projetos grandes.
+
+Exemplo de Aplicação Prática
+Em um projeto de e-commerce, utilizei um serviço (ProductService) para encapsular as chamadas a uma API REST de produtos. Esse serviço foi injetado em um componente (ProductListComponent), que por sua vez usou o data binding para exibir a lista de produtos na tela.
 
 **Exemplo prático:**
 
@@ -229,7 +277,10 @@ export class ProductListComponent implements OnInit {
 
 ---
 
-## 5. Prevenção de SQL Injection
+## 4. Prevenção de SQL Injection
+Para prevenir ataques de SQL injection, minha principal estratégia é nunca concatenar entradas de usuário diretamente em strings de SQL. As técnicas que aplico são:
+
+1. Queries Parametrizadas (Prepared Statements): É a forma mais segura e a que eu sempre priorizo. A entrada do usuário é tratada como um valor literal, e não como parte do comando SQL, eliminando o risco de injeção.
 
 ```java
 String sql = "SELECT * FROM users WHERE id = ?";
@@ -238,25 +289,33 @@ statement.setString(1, userInput);
 ResultSet rs = statement.executeQuery();
 ```
 
-- Uso de ORMs como Spring Data JPA/Hibernate
-- Princípio do menor privilégio
-- Validação de entrada no servidor
+Uso de ORMs (Object-Relational Mapping): Em projetos com frameworks como Spring, eu utilizo o Spring Data JPA/Hibernate. ORMs geram queries seguras por padrão, abstraindo a construção manual de SQL e prevenindo injeções de forma nativa. 
+Medidas Adicionais
+Princípio do Menor Privilégio: Configuro o usuário do banco de dados da aplicação com o mínimo de permissões necessárias.
+
+Validação de Entrada no Servidor: Valido o formato, tipo e tamanho de todos os dados recebidos antes de qualquer processamento.
 
 ---
 
-## 6. Diagnóstico e Melhoria de Performance de um Processo Batch
+## 5. Diagnóstico e Melhoria de Performance de um Processo Batch
 
-- Logs e monitoramento com timestamps
-- Profiling com VisualVM
-- Otimização de queries e índices
-- Batch processing para leitura/escrita
-- Compressão e agrupamento de arquivos para FTP
+Para diagnosticar e otimizar um processo batch, eu seguiria estes passos:
+
+a. Análise e Monitoramento: Começaria adicionando logs detalhados com timestamps para medir a duração de cada etapa-chave (leitura do DB, processamento, envio FTP). Em seguida, usaria um profiler (como o VisualVM) para identificar gargalos de CPU e memória.
+
+b. Otimização de Banco de Dados: Analisaria as queries lentas com EXPLAIN PLAN. Verificaria a necessidade de novos índices nas colunas de busca e junção. Implementaria a leitura e escrita em lotes (batching) para reduzir o I/O do banco.
+
+c. Otimização da Lógica: Refatoraria o código em busca de algoritmos ineficientes, como consultas ao banco dentro de loops, substituindo-os por uma única consulta massiva.
+
+d. Otimização da Transferência FTP: Para reduzir o tempo de rede, eu comprimiria os arquivos (.zip, .gz) antes do envio. Se fossem muitos arquivos pequenos, eu os agruparia em um único pacote (.tar) para diminuir o overhead de múltiplas conexões.
 
 ---
 
 ## 7. Queries SQL
+As queries a seguir foram escritas para atender aos requisitos.
 
-**Vendedores sem pedidos com a Samsonic**
+
+**a. Vendedores sem pedidos com a Samsonic**
 
 ```sql
 SELECT s.Name
@@ -269,7 +328,7 @@ WHERE s.ID NOT IN (
 );
 ```
 
-**Atualizar nomes de vendedores com 2+ pedidos**
+**b. Atualizar nomes de vendedores com 2+ pedidos**
 
 ```sql
 UPDATE Salesperson
@@ -282,7 +341,7 @@ WHERE ID IN (
 );
 ```
 
-**Deletar vendedores com pedidos para a cidade de Jackson**
+**c. Deletar vendedores com pedidos para a cidade de Jackson**
 
 ```sql
 DELETE FROM Salesperson
@@ -294,7 +353,7 @@ WHERE ID IN (
 );
 ```
 
-**Total de vendas por vendedor**
+**d. Total de vendas por vendedor**
 
 ```sql
 SELECT
@@ -310,35 +369,81 @@ GROUP BY
 
 ---
 
-## 8. Sistema XYZ - Gerenciamento de Plantas
+## 7. Sistema XYZ - Gerenciamento de Plantas
 
-**User Story:** CRUD de plantas com validação e regras de segurança.
+User Story
+Como um usuário administrador, eu quero poder criar, ler, atualizar e deletar (CRUD) plantas no sistema, para que os dados mestres estejam sempre corretos e disponíveis para as fases futuras do projeto.
 
-**Regras de Negócio e Suposições:**
+Regras de Negócio e Suposições
+- RN01: O código da planta deve ser único.
 
-- Código único, numérico e obrigatório
-- Descrição opcional, max 10 caracteres
-- Apenas administradores podem deletar
+- RN02: O código é numérico e obrigatório.
 
-**Estratégia de Testes:**
+- RN03: A descrição é opcional, com no máximo 10 caracteres.
 
-- Unidade e integração
-- Edge cases: duplicidade, código não numérico, descrição longa, usuário não-admin tentando deletar
+- RN04: Apenas administradores podem excluir plantas.
+
+Suposição: Existe um sistema de autenticação e autorização que diferencia usuários "administradores" de outros perfis.
+
+Validações e Medidas de Segurança
+- Validação (Backend): Implementaria validações para garantir que o Code é numérico e único (consulta prévia ao banco) e que a Description não excede 10 caracteres.
+
+- Segurança (RBAC): Protegeria o endpoint de exclusão (DELETE /api/plants/{id}) para que apenas usuários com a role ADMIN possam acessá-lo.
+
+Estratégia de Testes
+- Testes de Unidade para as funções de validação.
+
+- Testes de Integração para as operações CRUD com o banco.
+
+- Testaria os seguintes casos de borda:
+
+- Tentar criar planta com código duplicado.
+
+- Tentar criar planta com código não numérico.
+
+- Tentar salvar descrição com mais de 10 caracteres.
+
+- Tentar deletar uma planta como usuário não-admin (esperando um erro 403 Forbidden).
 
 ---
 
 ## 9. Testes da Funcionalidade de Cadastro de Usuário
 
-**Tipos de testes:** Unidade, Integração, E2E\
-**Edge Cases:** campos vazios, e-mail inválido, caracteres especiais, acesso não-admin
+**Tipos de Testes e Cenários**
+- Testes de Unidade: Foco em lógicas pequenas e isoladas.
+
+    - Cenário: Testar a função de validação de formato de e-mail.
+
+- Testes de Integração: Foco na interação entre camadas (serviço e banco de dados).
+
+    - Cenário: Tentar salvar um usuário com e-mail duplicado e verificar se a exceção correta é lançada.
+
+- Testes End-to-End (E2E): Foco no fluxo completo do usuário.
+
+    - Cenário: Simular um admin deletando um usuário e verificar se ele some da lista na UI.
+
+**Edge Cases que eu testaria**
+- Tentativa de cadastro com campos obrigatórios vazios.
+
+- Entrada de e-mail em formato inválido.
+
+- Entrada de dados com caracteres especiais para testar contra XSS.
+
+- Tentativa de um usuário não-admin de acessar a funcionalidade de exclusão via API.
 
 ```java
+// Teste de Integração para a regra de unicidade de e-mail
+
 @Test
 Function test_deve_lancar_excecao_ao_salvar_usuario_com_email_duplicado() {
+    // Arrange: Salva um usuário inicial no banco de teste.
     User usuarioExistente = new User("John Doe", "john.doe@example.com");
     userRepository.save(usuarioExistente);
 
     User novoUsuarioComEmailIgual = new User("Jane Doe", "john.doe@example.com");
+
+    // Act & Assert: Verifica se a tentativa de salvar o segundo usuário
+    // com o mesmo e-mail lança a exceção esperada.
     assertThrows(EmailDuplicadoException.class, () -> {
         userService.salvar(novoUsuarioComEmailIgual);
     });
